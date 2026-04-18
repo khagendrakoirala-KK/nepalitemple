@@ -15,7 +15,7 @@ fetch(`data/posts/${postId}.json`)
       <article>
         <h1>${post.title}</h1>
         <img src="${post.image}" alt="${post.title}">
-        <p>${post.description}</p>
+       ${post.description.map(p => `<p>${p}</p>`).join("")}
         <small>${post.date}</small>
       </article>
     `;
