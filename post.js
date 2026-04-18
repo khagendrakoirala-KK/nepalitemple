@@ -1,15 +1,15 @@
 const params = new URLSearchParams(window.location.search);
-const postId = parseInt(params.get("id"));
+const postId = params.get("id");
 
-fetch("data/posts.json")
+fetch(`data/posts/${postId}.json`)
   .then(res => res.json())
-  .then(posts => {
-    const post = posts.reverse()[postId];
+  .then(post => {
+    document.title = `${post.title} – Moments & Stories`;
 
-    if (!post) {
-      document.getElementById("post").innerHTML = "<p>Post not found.</p>";
-      return;
-    }
+    const meta = document.createElement("meta");
+    meta.name = "description";
+    meta.content = post.description;
+    document.head.appendChild(meta);
 
     document.getElementById("post").innerHTML = `
       <article>
@@ -19,4 +19,7 @@ fetch("data/posts.json")
         <small>${post.date}</small>
       </article>
     `;
+  })
+  .catch(() => {
+    document.getElementById("post").innerHTML = "<p>Post not found.</p>";
   });

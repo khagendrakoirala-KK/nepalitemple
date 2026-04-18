@@ -3,12 +3,27 @@ let currentPage = 1;
 let allPosts = [];
 let filteredPosts = [];
 
-fetch("data/posts.json")
+fetch("data/index.json")
   .then(res => res.json())
-  .then(posts => {
-    allPosts = posts.reverse(); // newest first
-    filteredPosts = allPosts;
-    renderPage();
+  .then(index => {
+    // Load all post files
+    const promises = index.map(item =>
+      fetch(`data/posts/${item.id}.json`).then(res => res.json())
+    );
+
+    Promise.all(promises).then(posts => {
+      // attach id to each post
+      allPosts = posts.map((post, i) => ({
+        ...post,
+        id: index[i].id
+      }));
+
+      // newest first
+      allPosts.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+      filteredPosts = allPosts;
+      renderPage();
+    });
   });
 
 function renderPage() {
@@ -31,8 +46,7 @@ function renderPage() {
 
     article.style.cursor = "pointer";
     article.onclick = () => {
-      const index = allPosts.indexOf(post);
-      window.location.href = `post.html?id=${index}`;
+      window.location.href = `post.html?id=${post.id}`;
     };
 
     container.appendChild(article);
